@@ -1,68 +1,66 @@
-PLATFORM := macosx_x64
-#PLATFORM := linux-x86_64
-#PLATFORM := linux-amd64
+PLATFORM := macos_x64
+#PLATFORM := linux-x64
 
-PROTOC_VERSION := 3.6.1
-PROTOC_PLATFORM := osx-x86_64
-
-GRPC_TOOLS_VERSION := 1.18.0-dev
 GRPC_CLIENT_DIR := client/csharp-unity/Assets/GRPC
 GRPC_CLIENT_GENERATED_DIR := $(GRPC_CLIENT_DIR)/Pj.Grpc.Sample
 
-dep: protoc-install	grpc-tools-csharp	grpc-tools-python
+GRPC_SERVER_GENERATED_DIR := server/python
+GRPC_PROTOC_DIR := grpc-protoc
 
-init-grpc-tools:
-	mkdir -p Grpc.Tools
+# https://packages.grpc.io/archive/2018/11/e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-6619311d-4470-4a1a-b68e-b84bacb2e22c/index.xml
+
+GRPC_BUILD_YEAR := 2018
+GRPC_BUILD_MONTH := 11
+GRPC_BUILD_COMMIT := e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-6619311d-4470-4a1a-b68e-b84bacb2e22c
+GRPC_BUILD_VERSION := 1.18.0-dev
+
+GRPC_PROTOC := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/protoc/grpc-protoc_$(PLATFORM)-$(GRPC_BUILD_VERSION).tar.gz
+GRPC_PYTHON := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/python
+GRPC_CSHARP_UNITY := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/csharp/grpc_unity_package.$(GRPC_BUILD_VERSION).zip
+GRPC_PROTOC_PLUGINS := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/protoc/grpc-protoc_$(PLATFORM)-$(GRPC_BUILD_VERSION).tar.gz
+
+dep: grpc-protoc-plugins	grpc-unity-package
+
+init-grpc-protoc-plugins:
+	mkdir -p $(GRPC_PROTOC_DIR)
 
 init-client:
 	mkdir -p $(GRPC_CLIENT_GENERATED_DIR)
 
 init:	init-client	init-grpc-tools
 
-build-server:	grpc-tools-python	protoc-server
+build-server:	protoc-server
 
-build-client:	grpc-tools-csharp	grpc-unity-package	protoc-client
+build-client:	protoc-client
 
 run-server:
-	cd server/python && python server.py
+	cd $(GRPC_SERVER_GENERATED_DIR) && python server.py
 
 run-client:
 	@echo "TODO"
 
-grpc-tools-csharp:	init-grpc-tools
-	$(eval GRPC_TOOLS_NUPKG=Grpc.Tools.$(GRPC_TOOLS_VERSION).nupkg)
-	wget https://packages.grpc.io/archive/2018/11/e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-9b09b221-3b75-48ab-a39a-257224c0a252/csharp/$(GRPC_TOOLS_NUPKG)
-	unzip -o $(GRPC_TOOLS_NUPKG) -d Grpc.Tools
-	chmod +x Grpc.Tools/tools/$(PLATFORM)/*
-	rm $(GRPC_TOOLS_NUPKG)
-
-grpc-tools-python:
-	pip install --pre --upgrade --force-reinstall --extra-index-url \
-    https://packages.grpc.io/archive/2018/11/e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-6619311d-4470-4a1a-b68e-b84bacb2e22c/python \
-    grpcio grpcio-{tools,health-checking,reflection,testing}
+grpc-protoc-plugins:	init-grpc-protoc-plugins
+	wget -O grpc-protoc.tar.gz $(GRPC_PROTOC_PLUGINS)
+	tar xvfz grpc-protoc.tar.gz -C $(GRPC_PROTOC_DIR)
+	chmod +x $(GRPC_PROTOC_DIR)/protoc
+	rm grpc-protoc.tar.gz
 
 grpc-unity-package:	init-client
-	$(eval GRPC_UNITY_PACKAGE=grpc_unity_package.$(GRPC_TOOLS_VERSION).zip)
-	wget https://packages.grpc.io/archive/2018/11/e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-9b09b221-3b75-48ab-a39a-257224c0a252/csharp/$(GRPC_UNITY_PACKAGE)
-	unzip -o $(GRPC_UNITY_PACKAGE) -d $(GRPC_CLIENT_DIR)
-	rm $(GRPC_UNITY_PACKAGE)
-
-protoc-install:
-	$(eval PROTOC_ZIP=protoc-$(PROTOC_VERSION)-$(PROTOC_PLATFORM).zip)
-	wget https://github.com/google/protobuf/releases/download/v$(PROTOC_VERSION)/$(PROTOC_ZIP)
-	sudo unzip -o $(PROTOC_ZIP) -d /usr/local bin/protoc
-	rm -f $(PROTOC_ZIP)
+	wget -O grpc_unity_package.zip $(GRPC_CSHARP_UNITY)
+	unzip -o grpc_unity_package.zip -d $(GRPC_CLIENT_DIR)
+	rm grpc_unity_package.zip
 
 protoc-client:
-	protoc -I proto --csharp_out $(GRPC_CLIENT_GENERATED_DIR) --grpc_out $(GRPC_CLIENT_GENERATED_DIR) proto/*.proto --plugin=protoc-gen-grpc=Grpc.Tools/tools/$(PLATFORM)/grpc_csharp_plugin
+	$(GRPC_PROTOC_DIR)/protoc -I proto --csharp_out $(GRPC_CLIENT_GENERATED_DIR) --grpc_out $(GRPC_CLIENT_GENERATED_DIR) proto/*.proto --plugin=protoc-gen-grpc=$(GRPC_PROTOC_DIR)/grpc_csharp_plugin
 
 protoc-server:
-	python -m grpc_tools.protoc -I proto --python_out=server/python/ --grpc_python_out=server/python proto/helloworld.proto
+	$(GRPC_PROTOC_DIR)/protoc -I proto --python_out $(GRPC_SERVER_GENERATED_DIR) --grpc_out $(GRPC_SERVER_GENERATED_DIR) proto/*.proto --plugin=protoc-gen-grpc=$(GRPC_PROTOC_DIR)/grpc_python_plugin
 
 clean-client:
-	rm -rf $(GRPC_CLIENT_DIR) Grpc.Tools
+	rm -rf $(GRPC_CLIENT_DIR)
 
 clean-server:
-	rm -f server/python/*_pb2*
+	rm -f $(GRPC_SERVER_GENERATED_DIR)/*_pb2*
 
 clean:	clean-client	clean-server
+	rm -rf $(GRPC_PROTOC_DIR)
