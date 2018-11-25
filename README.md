@@ -94,7 +94,7 @@ Listening at 50051 port.
 On Unity open the project client/csharp-unity and hit Play
 The result must be
 
-![](doc/unity-grpc.png)
+![](doc/unity-grpc-running.png)
 
 
 # Ref
