@@ -14,9 +14,13 @@ Minimal GRPC unary server/client using Unity as Client.
 ![](doc/grpc-unary-with-unity.png)
 
 
-## Message+Service
+## Proto
 
 ```proto
+// For Unity
+option csharp_namespace = "Pj.Grpc.Sample";
+package helloworld;
+
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
@@ -32,6 +36,33 @@ message HelloRequest {
 message HelloReply {
   string message = 1;
 }
+```
+
+## Server
+
+```python
+class Greeter(helloworld_pb2_grpc.GreeterServicer):
+
+    def SayHello(self, request, context):
+        return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
+```
+
+## Client
+
+```csharp
+    // ...
+    public void Say()
+    {
+        Channel channel = new Channel(ip + ":" + port, ChannelCredentials.Insecure);
+        var client = new Greeter.GreeterClient(channel);
+        string user = Application.platform.ToString();
+
+        var reply = client.SayHello(new HelloRequest { Name = user });
+        Debug.Log("reply: " + reply.Message);
+        text.text = "reply: " + reply.Message;
+
+        channel.ShutdownAsync().Wait();
+    }
 ```
 
 # Build
@@ -56,7 +87,7 @@ Will generate the proto bridge classes in client/csharp-unity/Assets/GRPC/*
 
     make run-server
 
-Listenning at 50051 port
+Listening at 50051 port.
 
 ## Client
 

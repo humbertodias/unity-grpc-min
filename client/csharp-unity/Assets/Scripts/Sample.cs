@@ -7,7 +7,6 @@ using Pj.Grpc.Sample;
 
 public class Sample : MonoBehaviour
 {
-
     public string ip = "127.0.0.1";
     public string port = "50051";
 
@@ -22,14 +21,8 @@ public class Sample : MonoBehaviour
     public void Say()
     {
         Channel channel = new Channel(ip + ":" + port, ChannelCredentials.Insecure);
-
         var client = new Greeter.GreeterClient(channel);
-        string user = "editor";
-#if UNITY_ANDROID && !UNITY_EDITOR
-    user = "android";
-#elif UNITY_IOS && !UNITY_EDITOR
-    user = "ios";
-#endif
+        string user = Application.platform.ToString();
 
         var reply = client.SayHello(new HelloRequest { Name = user });
         Debug.Log("reply: " + reply.Message);
