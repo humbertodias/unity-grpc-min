@@ -91,9 +91,14 @@ Will generate the proto bridge classes in client/csharp-unity/Assets/GRPC/*
 
 ## Server
 
-    make run-server
+    make run-server-python
 
 Listening at 50051 port.
+
+or with go
+    
+    make go-install
+    make run-server-go
 
 ## Client
 
