@@ -1,11 +1,8 @@
+PLATFORM := macosx_x64
+GO_VERSION := 1.11.2
+
 install-go:
 	GO_TAR_GZ=go-$(GO_VERSION).$(PLATFORM).tar.gz
 	wget https://dl.google.com/go/$(GO_TAR_GZ)
 	sudo tar -C /usr/local -xvzf $(GO_TAR_GZ)
 	rm $(GO_TAR_GZ)
-
-install-protoc:
-	PROTOC_ZIP=protoc-$(PROTOC_VERSION)-$(PLATFORM).zip
-	curl -OL https://github.com/google/protobuf/releases/download/v$(PROTOC_VERSION)/$(PROTOC_ZIP)
-	sudo unzip -o $(PROTOC_ZIP) -d /usr/local bin/protoc
-	rm -f $(PROTOC_ZIP)

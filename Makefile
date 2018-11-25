@@ -1,34 +1,33 @@
 PLATFORM := macosx_x64
 #PLATFORM := linux-x86_64
 #PLATFORM := linux-amd64
-GRPC_TOOLS_VERSION := 1.18.0-dev
-GO_VERSION := 1.11.2
-PROTOC_VERSION := 3.6.1
 
+PROTOC_VERSION := 3.6.1
+PROTOC_PLATFORM := osx-x86_64
+
+GRPC_TOOLS_VERSION := 1.18.0-dev
 GRPC_CLIENT_DIR := client/csharp-unity/Assets/GRPC
 GRPC_CLIENT_GENERATED_DIR := $(GRPC_CLIENT_DIR)/Pj.Grpc.Sample
+
+dep: protoc-install	grpc-tools-csharp	grpc-tools-python
 
 init-grpc-tools:
 	mkdir -p Grpc.Tools
 
 init-client:
-	mkdir -p $(GRPC_CLIENT_GENERATED_DIR) $(GRPC_CLIENT_PLUGINS_DIR)
+	mkdir -p $(GRPC_CLIENT_GENERATED_DIR)
 
 init:	init-client	init-grpc-tools
-
-python-requirements:
-	cd server/python && \
-	pip install -r requirements.txt
 
 build-server:	grpc-tools-python	protoc-server
 
 build-client:	grpc-tools-csharp	grpc-unity-package	protoc-client
 
 run-server:
-	cd server/python && \
-	python server.py
+	cd server/python && python server.py
 
 run-client:
+	@echo "TODO"
 
 grpc-tools-csharp:	init-grpc-tools
 	$(eval GRPC_TOOLS_NUPKG=Grpc.Tools.$(GRPC_TOOLS_VERSION).nupkg)
@@ -48,7 +47,13 @@ grpc-unity-package:	init-client
 	unzip -o $(GRPC_UNITY_PACKAGE) -d $(GRPC_CLIENT_DIR)
 	rm $(GRPC_UNITY_PACKAGE)
 
-protoc-client: grpc-tools-csharp
+protoc-install:
+	$(eval PROTOC_ZIP=protoc-$(PROTOC_VERSION)-$(PROTOC_PLATFORM).zip)
+	wget https://github.com/google/protobuf/releases/download/v$(PROTOC_VERSION)/$(PROTOC_ZIP)
+	sudo unzip -o $(PROTOC_ZIP) -d /usr/local bin/protoc
+	rm -f $(PROTOC_ZIP)
+
+protoc-client:
 	protoc -I proto --csharp_out $(GRPC_CLIENT_GENERATED_DIR) --grpc_out $(GRPC_CLIENT_GENERATED_DIR) proto/*.proto --plugin=protoc-gen-grpc=Grpc.Tools/tools/$(PLATFORM)/grpc_csharp_plugin
 
 protoc-server:

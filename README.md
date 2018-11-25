@@ -67,6 +67,12 @@ class Greeter(helloworld_pb2_grpc.GreeterServicer):
 
 # Build
 
+# Dep
+
+    make dep
+
+sudo command will ask for your local password to install protoc
+
 ## Server
 
     make build-server
