@@ -46,6 +46,20 @@ class Greeter(helloworld_pb2_grpc.GreeterServicer):
     def SayHello(self, request, context):
         return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
 ```
+or
+
+```go
+func (*server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
+
+	fmt.Printf("Greet function was involked with %v\n", req)
+	firstName := req.GetName()
+	result := "Hello " + firstName
+	res := &pb.HelloReply{
+		Message: result,
+	}
+	return res, nil
+}
+```
 
 ## Client
 
@@ -93,12 +107,12 @@ Will generate the proto bridge classes in client/csharp-unity/Assets/GRPC/*
 
     make run-server-python
 
-Listening at 50051 port.
-
 or with go
     
     make go-install
     make run-server-go
+
+Listening at 50051 port.
 
 ## Client
 
