@@ -8,7 +8,6 @@ Minimal GRPC unary server/client using Unity as Client.
 * Unity 2018.2+
 * Python 2
 
-
 # Arch
 
 ![](doc/grpc-unary-with-unity.png)
@@ -42,7 +41,6 @@ message HelloReply {
 
 ```python
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
-
     def SayHello(self, request, context):
         return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
 ```
@@ -50,10 +48,8 @@ or
 
 ```go
 func (*server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
-
 	fmt.Printf("Greet function was involked with %v\n", req)
-	firstName := req.GetName()
-	result := "Hello " + firstName
+	result := "Hello " + req.GetName()
 	res := &pb.HelloReply{
 		Message: result,
 	}
@@ -64,19 +60,18 @@ func (*server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloRep
 ## Client
 
 ```csharp
-    // ...
-    public void Say()
-    {
-        Channel channel = new Channel(ip + ":" + port, ChannelCredentials.Insecure);
-        var client = new Greeter.GreeterClient(channel);
-        string user = Application.platform.ToString();
+public void Say()
+{
+    Channel channel = new Channel(ip + ":" + port, ChannelCredentials.Insecure);
+    var client = new Greeter.GreeterClient(channel);
+    string name = Application.platform.ToString();
 
-        var reply = client.SayHello(new HelloRequest { Name = user });
-        Debug.Log("reply: " + reply.Message);
-        text.text = "reply: " + reply.Message;
+    var reply = client.SayHello(new HelloRequest { Name = name });
+    Debug.Log("reply: " + reply.Message);
+    text.text = "reply: " + reply.Message;
 
-        channel.ShutdownAsync().Wait();
-    }
+    channel.ShutdownAsync().Wait();
+}
 ```
 
 # Build

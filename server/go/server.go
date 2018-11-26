@@ -14,10 +14,8 @@ import (
 type server struct{}
 
 func (*server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloReply, error) {
-
 	fmt.Printf("Greet function was involked with %v\n", req)
-	firstName := req.GetName()
-	result := "Hello " + firstName
+	result := "Hello " + req.GetName()
 	res := &pb.HelloReply{
 		Message: result,
 	}

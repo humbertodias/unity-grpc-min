@@ -22,9 +22,9 @@ public class Sample : MonoBehaviour
     {
         Channel channel = new Channel(ip + ":" + port, ChannelCredentials.Insecure);
         var client = new Greeter.GreeterClient(channel);
-        string user = Application.platform.ToString();
+        string name = Application.platform.ToString();
 
-        var reply = client.SayHello(new HelloRequest { Name = user });
+        var reply = client.SayHello(new HelloRequest { Name = name });
         Debug.Log("reply: " + reply.Message);
         text.text = "reply: " + reply.Message;
 
