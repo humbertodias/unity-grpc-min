@@ -37,3 +37,7 @@ sysinfo.txt
 
 
 .DS_Store
+
+grpc-protoc
+client/csharp-unity/Assets/GRPC/*
+server/python

@@ -1,5 +1,5 @@
-PLATFORM := macos_x64
-#PLATFORM := linux-x64
+#PLATFORM := macos_x64
+PLATFORM := linux_x64
 
 GRPC_CLIENT_DIR := client/csharp-unity/Assets/GRPC
 GRPC_CLIENT_GENERATED_DIR := $(GRPC_CLIENT_DIR)/Pj.Grpc.Sample
@@ -7,20 +7,20 @@ GRPC_CLIENT_GENERATED_DIR := $(GRPC_CLIENT_DIR)/Pj.Grpc.Sample
 GRPC_SERVER_GENERATED_DIR := server
 GRPC_PROTOC_DIR := grpc-protoc
 
-# https://packages.grpc.io/archive/2018/11/e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-6619311d-4470-4a1a-b68e-b84bacb2e22c/index.xml
+# https://packages.grpc.io/archive/2019/04/8054a731d1486e439e6becb1987b1e97246e6476-c278eb13-0168-45da-b041-875459bcbc41/index.xml
 
-GRPC_BUILD_YEAR := 2018
-GRPC_BUILD_MONTH := 11
-GRPC_BUILD_COMMIT := e0d9692fa30cf3a7a8410a722693d5d3d68fb0fd-6619311d-4470-4a1a-b68e-b84bacb2e22c
-GRPC_BUILD_VERSION := 1.18.0-dev
+GRPC_BUILD_YEAR := 2019
+GRPC_BUILD_MONTH := 04
+GRPC_BUILD_COMMIT := 8054a731d1486e439e6becb1987b1e97246e6476-c278eb13-0168-45da-b041-875459bcbc41
+GRPC_BUILD_VERSION := 1.21.0-dev
 
 GRPC_PROTOC := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/protoc/grpc-protoc_$(PLATFORM)-$(GRPC_BUILD_VERSION).tar.gz
 GRPC_PYTHON := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/python
 GRPC_CSHARP_UNITY := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/csharp/grpc_unity_package.$(GRPC_BUILD_VERSION).zip
 GRPC_PROTOC_PLUGINS := https://packages.grpc.io/archive/$(GRPC_BUILD_YEAR)/$(GRPC_BUILD_MONTH)/$(GRPC_BUILD_COMMIT)/protoc/grpc-protoc_$(PLATFORM)-$(GRPC_BUILD_VERSION).tar.gz
 
-GO_VERSION := 1.11.2
-GO_PLATFORM := darwin-amd64
+GO_VERSION := 1.12.4
+GO_PLATFORM := linux-amd64
 GO_TAR_GZ := go$(GO_VERSION).$(GO_PLATFORM).tar.gz
 GO_URL := https://dl.google.com/go/$(GO_TAR_GZ)
 
